@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# This is the library to handle yaml files. The library will allow you
+# to load a yaml file and access each member, and also allow you to save
+# variables to a new yaml file. The only limitation is that the name of
+# yaml variables can not contain string 0TTTT0LLLL0 since that string
+# is used as a delimiter in the program.
+
+function parse_yaml {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\):|\1|" \
+        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("0TTTT0LLLL0")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
+
+# Load a yaml file as a set of environment variables.
+# Usage:
+#   load_yaml 'leap_' '/onvm/conf/nodes.conf.yml'
+function load_yaml {
+   eval $(parse_yaml $2 $1)
+}
+
+# save environments variables with given starting string into a yaml file
+# Usage:
+#   save_yaml 'leap_' '/etc/test/a_yaml_file.yml' 
+function save_yaml {
+   echo '#ES-Install Generated Configurations' > $2
+   set | sed -n -e "/^$1/p" | sort | while read line
+   do
+      local newline="${line/$1/}"
+      IFS='=' read -r -a parts <<< "$newline"
+      newline=${parts[0]//0TTTT0LLLL0/.}
+      local val=${parts[1]}
+      #local newval=${val//[0-9]/}
+      #if [ "$newval" == "" ] || [ "$newval" == "." ]; then
+      #   echo $newline: $val >> $2
+      #else
+      #   echo $newline: \"$val\" >> $2
+      #fi
+      echo $newline: $val >> $2
+   done
+}
+
+# set environments variable with given value
+# Usage:
+#   set_yaml_value 'leap_' 'name' 'value'
+function set_yaml_value {
+   local name=$2
+   name=${name//./0TTTT0LLLL0}
+   eval $1$name='$3'
+}
+
+# get environments variable with given name
+# Usage:
+#   get_yaml_value 'leap_' 'name'
+function get_yaml_value {
+   local name=$2
+   name=$1${name//./0TTTT0LLLL0}
+   eval name=\$${name}
+   echo $name
+}
+
+# delete environments variable with given name
+# Usage:
+#   del_yaml_value 'leap_' 'name'
+# above command will remove an environment variable named leap_name
+function del_yaml_value {
+   local name=$2
+   name=${name//./0TTTT0LLLL0}
+   unset $1$name
+}
+
+# clear set of environments varilables starting with the given values
+# Usage:
+#   del_yaml_values 'leap_' 'name'
+# above command will remove all environment variables starts with leap_name
+# if leave the second parameter blank, the command will remove all the
+# environment variables starts with leap_
+function del_yaml_values {
+   local name=$2
+   name=${name//./0TTTT0LLLL0}
+   list=`set | sed -n -e "/^$1$name/p" | awk -F= '/^\w/ {print $1}' | xargs`
+   unset -v $list
+}
+
