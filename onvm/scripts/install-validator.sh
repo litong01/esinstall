@@ -26,3 +26,8 @@ set_yaml_value 'elastic__' 'network.description' 'Just something here'
 
 echo 'Access the nodes and see the cluster'
 curl -XGET "http://${ip}:9200/_nodes"
+
+# The following simply get just the process
+curl -XGET "http://${ip}:9200/_nodes/process"
+# The following command gets the jvm settings
+curl -XGET "http://${ip}:9200/_nodes/jvm"
