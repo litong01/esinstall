@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
 
           node.vm.provision "#{key}-install", type: "shell" do |s|
             s.path = "onvm/scripts/install-" + node_type + ".sh"
-            s.args = nodes[nodekey]['eth0']
+            s.args = nodes[nodekey]['eth0'] + ' ' + nodes[nodekey]['hostname']
           end
         end
       end

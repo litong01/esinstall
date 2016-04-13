@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # $1 public ip eth0
+# $2 hostname
 
 source /onvm/scripts/yaml-config
 load_yaml 'leap__' '/onvm/conf/nodes.conf.yml'
