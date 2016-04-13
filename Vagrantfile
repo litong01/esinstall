@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "onvm", "/onvm", disabled: false, create: true
   config.vm.synced_folder nodes['synchfolder'], "/esbin", disabled: false, create:true
 
-  node_types = ['master', 'data', 'client', 'kibana', 'tribe']
+  node_types = ['master', 'data', 'client', 'kibana', 'tribe', 'validator']
   node_types.each do | node_type |
     lnodes = nodes[node_type]
     if lnodes

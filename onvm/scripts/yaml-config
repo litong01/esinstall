@@ -3,24 +3,29 @@
 # This is the library to handle yaml files. The library will allow you
 # to load a yaml file and access each member, and also allow you to save
 # variables to a new yaml file. The only limitation is that the name of
-# yaml variables can not contain string 0TTTT0LLLL0 since that string
-# is used as a delimiter in the program.
+# yaml variables can not contain string _TTT0LLL_ since that string
+# is used as a delimiter in the program. Also the yaml file has to use 2
+# spaces as the indention, any spacing other than 2 will cause problems.
 
-function parse_yaml {
-   local prefix=$2
-   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
-   sed -ne "s|^\($s\):|\1|" \
-        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
-        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
-   awk -F$fs '{
-      indent = length($1)/2;
-      vname[indent] = $2;
-      for (i in vname) {if (i > indent) {delete vname[i]}}
-      if (length($3) > 0) {
-         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("0TTTT0LLLL0")}
-         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
-      }
-   }'
+parse_yaml() {
+    local prefix=$2
+    local s
+    local w
+    local fs
+    s='[[:space:]]*'
+    w='[a-zA-Z0-9_]*'
+    fs="$(echo @|tr @ '\034')"
+    sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s[:-]$s\(.*\)$s\$|\1$fs\2$fs\3|p" "$1" |
+    awk -F"$fs" '{
+    indent = length($1)/2;
+    vname[indent] = $2;
+    for (i in vname) {if (i > indent) {delete vname[i]}}
+        if (length($3) > 0) {
+            vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_TTT0LLL_")}
+            printf("%s%s%s=(\"%s\")\n", "'"$prefix"'",vn, $2, $3);
+        }
+    }' | sed 's/_TTT0LLL_=/+=/g'
 }
 
 # Load a yaml file as a set of environment variables.
@@ -39,15 +44,11 @@ function save_yaml {
    do
       local newline="${line/$1/}"
       IFS='=' read -r -a parts <<< "$newline"
-      newline=${parts[0]//0TTTT0LLLL0/.}
+      newline=${parts[0]//_TTT0LLL_/.}
       local val=${parts[1]}
-      #local newval=${val//[0-9]/}
-      #if [ "$newval" == "" ] || [ "$newval" == "." ]; then
-      #   echo $newline: $val >> $2
-      #else
-      #   echo $newline: \"$val\" >> $2
-      #fi
-      echo $newline: $val >> $2
+      val="${val%\'}"
+      val="${val#\'}"
+      echo "${newline}: ${val}" >> $2
    done
 }
 
@@ -56,7 +57,7 @@ function save_yaml {
 #   set_yaml_value 'leap_' 'name' 'value'
 function set_yaml_value {
    local name=$2
-   name=${name//./0TTTT0LLLL0}
+   name=${name//./_TTT0LLL_}
    eval $1$name='$3'
 }
 
@@ -65,7 +66,7 @@ function set_yaml_value {
 #   get_yaml_value 'leap_' 'name'
 function get_yaml_value {
    local name=$2
-   name=$1${name//./0TTTT0LLLL0}
+   name=$1${name//./_TTT0LLL_}
    eval name=\$${name}
    echo $name
 }
@@ -76,7 +77,7 @@ function get_yaml_value {
 # above command will remove an environment variable named leap_name
 function del_yaml_value {
    local name=$2
-   name=${name//./0TTTT0LLLL0}
+   name=${name//./_TTT0LLL_}
    unset $1$name
 }
 
@@ -88,8 +89,23 @@ function del_yaml_value {
 # environment variables starts with leap_
 function del_yaml_values {
    local name=$2
-   name=${name//./0TTTT0LLLL0}
+   name=${name//./_TTT0LLL_}
    list=`set | sed -n -e "/^$1$name/p" | awk -F= '/^\w/ {print $1}' | xargs`
    unset -v $list
+}
+
+# get a set of environments varilables starting with the given values
+# Usage:
+#   get_yaml_values 'leap_' 'name.name1.name2'
+# above command will remove all environment variables starts with leap_name
+# if leave the second parameter blank, the command will remove all the
+# environment variables starts with leap_
+function get_yaml_values {
+   local name=$2
+   name=${name//./_TTT0LLL_}
+   list=`set | sed -n -e "/^$1$name/p" | awk -F= '/^\w/ {print $1}' | xargs`
+   local val
+   eval val=\$\{$list[@]\}
+   echo $val
 }
 

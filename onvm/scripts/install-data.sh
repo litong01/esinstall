@@ -14,6 +14,21 @@ if [ -f /esbin/elasticsearch-2.*.deb ];then
   clustername=`get_yaml_value 'leap__' 'elasticsearch.clustername'`
   echo 'Cluster name is '$clustername
 
+  unicasthosts=""
+  masternodes=`get_yaml_values 'leap__' 'master'`
+  for nodename in $masternodes
+  do
+    pname=`get_yaml_value 'leap__' 'logical2physical.'${nodename}`
+    ip=`get_yaml_value 'leap__' ${pname}'.eth0'`
+    if [ "$unicasthosts" ]; then
+        unicasthosts+=",\"${ip}:9300\""
+    else
+        unicasthosts="\"${ip}:9300\""
+    fi
+  done
+  unicasthosts='['$unicasthosts']'
+  echo 'Unicast hosts are '$unicasthosts
+
   mkdir -p /var/elasticsearch/data /var/elasticsearch/log
   chown -R elasticsearch:elasticsearch /var/elasticsearch
 
@@ -27,6 +42,10 @@ if [ -f /esbin/elasticsearch-2.*.deb ];then
   set_yaml_value 'elastic__' 'path.log' '/var/elasticsearch/log'
   set_yaml_value 'elastic__' 'bootstrap.mlockall' true
   set_yaml_value 'elastic__' 'cluster.name' $clustername
+  set_yaml_value 'elastic__' 'http.port' 9200
+  set_yaml_value 'elastic__' 'tcp.port' 9300
+  set_yaml_value 'elastic__' 'discovery.zen.ping.multicast.enabled' false
+  set_yaml_value 'elastic__' 'discovery.zen.ping.unicast.hosts' $unicasthosts
 
   # Save the configuration file
   save_yaml 'elastic__' '/etc/elasticsearch/elasticsearch.yml'
