@@ -8,8 +8,8 @@ load_yaml 'leap__' '/onvm/conf/nodes.conf.yml'
 # Java is required, install java first
 source /onvm/scripts/install-java.sh
 
-if [ -f /esbin/elasticsearch-2.*.deb ];then
-  dpkg -i /esbin/elasticsearch-2.*.deb
+if [ -f /esbin/elasticsearch-*.deb ];then
+  dpkg -i /esbin/elasticsearch-*.deb
 
   clustername=`get_yaml_value 'leap__' 'elasticsearch.clustername'`
   echo 'Cluster name is '$clustername

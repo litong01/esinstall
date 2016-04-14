@@ -9,6 +9,10 @@ if [ -z $java_installed ]; then
     mv /opt/leaptemp/* /opt/jdk8
     update-alternatives --install /usr/bin/java java /opt/jdk8/bin/java 100
     update-alternatives --install /usr/bin/javac javac /opt/jdk8/bin/javac 100
+
+    export JAVA_HOME=/opt/jdk8
+    export PATH=$PATH:$JAVA_HOME/bin
+
     echo 'Java install is now complete!'
   else
     echo 'Download java and place it in esbin directory.'
