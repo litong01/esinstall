@@ -14,9 +14,9 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "onvm", "/onvm", disabled: false, create: true
   config.vm.synced_folder nodes['synchfolder'], "/esbin", disabled: false, create:true
 
-  node_types = ['master', 'data', 'client', 'kibana', 'tribe', 'validator', 'test']
-  node_types.each do | node_type |
-    lnodes = nodes[node_type]
+  nodetypes = nodes['nodetypes']
+  nodetypes.each do | nodetype |
+    lnodes = nodes[nodetype]
     if lnodes
       lnodes.each do |key|
         config.vm.define "#{key}" do |node|
@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
           end
 
           node.vm.provision "#{key}-install", type: "shell" do |s|
-            s.path = "onvm/scripts/install-" + node_type + ".sh"
+            s.path = "onvm/scripts/install-" + nodetype + ".sh"
             s.args = nodes[nodekey]['eth0'] + ' ' + nodes[nodekey]['hostname']
           end
         end

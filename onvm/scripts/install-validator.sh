@@ -22,7 +22,10 @@ echo 'Unicast hosts are '$unicasthosts
 
 set_yaml_value 'elastic__' 'discovery.zen.ping.unicast.hosts' "${unicasthosts}"
 set_yaml_value 'elastic__' 'network.host' "$1"
-set_yaml_value 'elastic__' 'network.description' 'Just something here'
+set_yaml_value 'elastic__' 'network.description' '"Just something here"'
+
+save_yaml 'elastic__' 'test.yml'
+cat test.yml
 
 echo 'Access the nodes and see the cluster'
 curl -XGET "http://${ip}:9200/_nodes"
