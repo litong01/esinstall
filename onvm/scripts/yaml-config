@@ -28,11 +28,26 @@ parse_yaml() {
     }' | sed 's/_TTT0LLL_=/+=/g'
 }
 
+parse_flat_yaml() {
+    local prefix=$2
+    grep -P "^([a-zA-Z0-9_]*\.)+[a-zA-Z0-9_]+:[ ]*[a-zA-Z0-9_]+[ ]*$" $1 | sort | while read line
+    do
+        IFS=':' read -r -a parts <<< "$line"
+        local key=${parts[0]//./_TTT0LLL_}
+        local val=${parts[1]}
+        # Strip leading and trailing spaces
+        val="$(sed -e 's/[[:space:]]*$//' <<<${val})"
+        local cmd="${prefix}${key}='${val}'"
+        echo $cmd
+    done
+}
+
 # Load a yaml file as a set of environment variables.
 # Usage:
 #   load_yaml 'leap_' '/onvm/conf/nodes.conf.yml'
 function load_yaml {
    eval $(parse_yaml $2 $1)
+   eval $(parse_flat_yaml $2 $1)
 }
 
 # save environments variables with given starting string into a yaml file
@@ -108,4 +123,3 @@ function get_yaml_values {
    eval val=\$\{$list[@]\}
    echo $val
 }
-
