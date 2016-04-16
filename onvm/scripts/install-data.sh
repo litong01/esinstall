@@ -39,7 +39,7 @@ if [ -f /esbin/elasticsearch-*.deb ];then
   set_yaml_value 'elastic__' 'node.data' true
   set_yaml_value 'elastic__' 'node.name' $2
   set_yaml_value 'elastic__' 'path.data' '/var/elasticsearch/data'
-  set_yaml_value 'elastic__' 'path.log' '/var/elasticsearch/log'
+  set_yaml_value 'elastic__' 'path.logs' '/var/elasticsearch/log'
   set_yaml_value 'elastic__' 'bootstrap.mlockall' true
   set_yaml_value 'elastic__' 'cluster.name' $clustername
   set_yaml_value 'elastic__' 'http.port' 9200

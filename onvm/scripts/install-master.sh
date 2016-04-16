@@ -29,12 +29,16 @@ if [ -f /esbin/elasticsearch-*.deb ];then
   unicasthosts=[$unicasthosts]
   echo 'Unicast hosts are '$unicasthosts
 
+  mkdir -p /var/elasticsearch/log
+  chown -R elasticsearch:elasticsearch /var/elasticsearch
+
   # Use the yaml-config library to config elasticsearch
   load_yaml 'elastic__' '/etc/elasticsearch/elasticsearch.yml'
   set_yaml_value 'elastic__' 'network.host' "$1"
   set_yaml_value 'elastic__' 'node.master' true
   set_yaml_value 'elastic__' 'node.data' false
   set_yaml_value 'elastic__' 'node.name' $2
+  set_yaml_value 'elastic__' 'path.logs' '/var/elasticsearch/log'
   set_yaml_value 'elastic__' 'bootstrap.mlockall' true
   set_yaml_value 'elastic__' 'cluster.name' $clustername
   set_yaml_value 'elastic__' 'http.port' 9200
