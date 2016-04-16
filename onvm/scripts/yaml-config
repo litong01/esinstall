@@ -54,7 +54,8 @@ function load_yaml {
 # Usage:
 #   save_yaml 'leap_' '/etc/test/a_yaml_file.yml' 
 function save_yaml {
-   echo '#ES-Install Generated Configurations' > $2
+   echo '---' > $2
+   echo '#ES-Install Generated Configurations' >> $2
    set | sed -n -e "/^$1/p" | sort | while read line
    do
       local key; local val
