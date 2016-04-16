@@ -30,11 +30,11 @@ parse_yaml() {
 
 parse_flat_yaml() {
     local prefix=$2
-    grep -P "^([a-zA-Z0-9_]*\.)+[a-zA-Z0-9_]+:[ ]*[a-zA-Z0-9_]+[ ]*$" $1 | sort | while read line
+    grep -P "^([a-zA-Z0-9_]*\.)+[a-zA-Z0-9_]+:[ ]*.+$" $1 | sort | while read line
     do
-        IFS=':' read -r -a parts <<< "$line"
-        local key=${parts[0]//./_TTT0LLL_}
-        local val=${parts[1]}
+        local key; local val
+        IFS=':' read -r key val <<< "$line"
+        key=${key//./_TTT0LLL_}
         # Strip leading and trailing spaces
         val="$(sed -e 's/[[:space:]]*$//' <<<${val})"
         local cmd="${prefix}${key}='${val}'"
@@ -57,13 +57,15 @@ function save_yaml {
    echo '#ES-Install Generated Configurations' > $2
    set | sed -n -e "/^$1/p" | sort | while read line
    do
+      local key; local val
+      # Get rid of the prefix
       local newline="${line/$1/}"
-      IFS='=' read -r -a parts <<< "$newline"
-      newline=${parts[0]//_TTT0LLL_/.}
-      local val=${parts[1]}
+      # now split the line by the equal sign into two pieces
+      IFS='=' read -r key val <<< "$newline"
+      key=${key//_TTT0LLL_/.}
       val="${val%\'}"
       val="${val#\'}"
-      echo "${newline}: ${val}" >> $2
+      echo "${key}: ${val}" >> $2
    done
 }
 
