@@ -64,9 +64,11 @@ function save_yaml {
       # now split the line by the equal sign into two pieces
       IFS='=' read -r key val <<< "$newline"
       key=${key//_TTT0LLL_/.}
-      val="${val%\'}"
-      val="${val#\'}"
-      echo "${key}: ${val}" >> $2
+      if [ ! -z "$key" ]; then
+         val="${val%\'}"
+         val="${val#\'}"
+         echo "${key}: ${val}" >> $2
+      fi
    done
 }
 
