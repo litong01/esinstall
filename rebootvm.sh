@@ -1,9 +1,18 @@
-rm -r -f .vagrant
-VBoxManage snapshot h2-compute01 restore "Snapshot 3"
-VBoxManage snapshot h2-nova restore "Snapshot 3"
-VBoxManage snapshot h2-controller restore "Snapshot 3"
+#!/usr/bin/env bash
 
-vboxmanage startvm h2-compute01 --type headless
-vboxmanage startvm h2-nova --type headless
-vboxmanage startvm h2-controller --type headless
+rm -r -f .vagrant
+
+machines=('os-controller' 'os-neutron' 'os-compute01' 'os-compute02')
+snapshot=${1:-"Snapshot 2"}
+
+for key in ${machines[@]}; do
+    echo "Restore snapshot '$snapshot' for $key"
+    VBoxManage snapshot $key restore "$snapshot"
+done
+
+for key in ${machines[@]}; do
+    echo "Starting up $key"
+    VBoxManage startvm $key --type headless
+done
+
 vagrant up

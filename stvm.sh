@@ -1,3 +1,9 @@
-vboxmanage controlvm h2-compute01 acpipowerbutton
-vboxmanage controlvm h2-nova acpipowerbutton
-vboxmanage controlvm h2-controller acpipowerbutton
+#!/usr/bin/env bash
+
+machines=('os-controller' 'os-neutron' 'os-compute01' 'os-compute02')
+
+for key in ${machines[@]}; do
+    echo "Shutting down $key"
+    #VBoxManage controlvm $key acpipowerbutton
+    VBoxManage controlvm $key poweroff
+done

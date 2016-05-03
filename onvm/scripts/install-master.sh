@@ -29,7 +29,7 @@ if [ -f /esbin/elasticsearch-*.deb ];then
   unicasthosts=[$unicasthosts]
   echo 'Unicast hosts are '$unicasthosts
 
-  mkdir -p /var/elasticsearch/log
+  mkdir -p /var/elasticsearch/data /var/elasticsearch/log
   chown -R elasticsearch:elasticsearch /var/elasticsearch
 
   # Use the yaml-config library to config elasticsearch
@@ -60,6 +60,3 @@ else
   echo 'Elasticsearch binary was not found!'
   echo 'Download elasticsearch and configure the location in nodes.conf.yml file.'
 fi
-
-# Call the procedure to setup kibana
-source /onvm/scripts/install-kibana.sh $1
