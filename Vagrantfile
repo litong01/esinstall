@@ -12,7 +12,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder ".", "/vagrant", disabled: true
   config.vm.synced_folder "onvm", "/onvm", disabled: false, create: true
-  config.vm.synced_folder nodes['synchfolder'], "/esbin", disabled: false, create:true
 
   nodetypes = nodes['nodetypes']
   nodetypes.each do | nodetype |
@@ -24,6 +23,10 @@ Vagrant.configure("2") do |config|
 
           node.vm.provider :managed do |managed|
             managed.server = nodes[nodekey]['eth0']
+          end
+
+          if nodes['synchfolder']['nodes'].index(nodetype)
+            node.vm.synced_folder nodes['synchfolder']['folder'], "/esbin", disabled: false, create: true
           end
 
           node.vm.provision "#{key}-install", type: "shell" do |s|

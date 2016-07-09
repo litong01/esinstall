@@ -58,16 +58,77 @@ function save_yaml {
    echo '#ES-Install Generated Configurations' >> $2
    set | sed -n -e "/^$1/p" | sort | while read line
    do
-      local key; local val
-      # Get rid of the prefix
-      local newline="${line/$1/}"
+      local key; local rawkey; local val
       # now split the line by the equal sign into two pieces
-      IFS='=' read -r key val <<< "$newline"
+      IFS='=' read -r rawkey val <<< "$line"
+      # Get rid of the prefix
+      local key="${rawkey/$1/}"
       key=${key//_TTT0LLL_/.}
       if [ ! -z "$key" ]; then
-         val="${val%\'}"
-         val="${val#\'}"
-         echo "${key}: ${val}" >> $2
+         eval val=\$${rawkey}
+         echo "${key}: $val" >> $2
+      fi
+   done
+}
+
+function yjoin { local IFS="$1"; shift; echo "$*"; }
+
+# save environments variables with given starting string into a normal 2 space
+# indented yaml file
+# Usage:
+#   save_normal_yaml 'leap_' '/etc/test/a_yaml_file.yml' 
+function save_normal_yaml {
+   local prekeys=('' '' '' '' '' '' '' '' '' '')
+   local keys
+   echo '---' > $2
+   echo '#ES-Install Generated Configurations' >> $2
+   set | sed -n -e "/^$1/p" | sort | while read line
+   do
+      local key; local rawkey; local val;
+      # now split the line by the equal sign into two pieces
+      IFS='=' read -r rawkey val <<< "$line"
+      # Get rid of the prefix
+      key="${rawkey/$1/}"
+      key=${key//_TTT0LLL_/.}
+      if [ ! -z "$key" ]; then
+         IFS='.' read -r -a keys <<< "$key"
+         local padding=''
+         local prekeyslength=${#prekeys[@]}
+         local keyslength=${#keys[@]}
+         klastindex=$(($keyslength-1))
+
+         for ((i=0;i<$keyslength;i++))
+         do
+           if [[ $i -lt $prekeyslength ]]; then
+             if [[ ${keys[$i]} = ${prekeys[$i]} ]]; then
+               padding="${padding}  "
+             else
+               prekeyslength=0
+               (( i -= 1 ))
+             fi
+           elif [[ $i -lt $klastindex ]]; then
+             if [[ -z "$padding" ]]; then
+               echo "" >> $2
+             fi
+             echo "${padding}${keys[$i]}:" >> $2
+             padding="${padding}  "
+           else
+             eval flag="\$\{${rawkey}[1]}"; eval flag="${flag}"
+             if [[ -z "$flag" ]]; then 
+               eval val="\$\{${rawkey}}"; eval val="${val}"
+               ttval="${padding}${keys[$i]}: ${val}"
+             else
+               eval val='$(yjoin , ${'"${rawkey}"'[@]})'
+               eval val="${val}"
+               ttval="${padding}${keys[$i]}: [${val}]"
+             fi
+             if [[ -z "$padding" ]]; then
+               echo "" >> $2
+             fi
+             echo "$ttval" >> $2
+           fi
+         done
+         prekeys=( "${keys[@]}" )
       fi
    done
 }
