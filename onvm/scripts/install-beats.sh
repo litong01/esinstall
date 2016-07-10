@@ -26,6 +26,8 @@ load_yaml 'packetbeat__' '/etc/packetbeat/packetbeat.yml'
 set_yaml_value 'packetbeat__' 'output.elasticsearch.hosts' $eshosts
 save_normal_yaml 'packetbeat__' '/etc/packetbeat/packetbeat.yml'
 
+echo 'Start packetbeat service...'
+service packetbeat start
 # The following procedure installs topbeat
 if [ ! -f /esbin/topbeat_*.deb ];then
   mkdir -p /esbin
@@ -38,3 +40,6 @@ dpkg -i /esbin/topbeat_1.2.3_amd64.deb
 load_yaml 'topbeat__' '/etc/topbeat/topbeat.yml'
 set_yaml_value 'topbeat__' 'output.elasticsearch.hosts' $eshosts
 save_normal_yaml 'topbeat__' '/etc/topbeat/topbeat.yml'
+
+echo 'Start topbeat service...'
+service topbeat start
