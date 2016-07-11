@@ -70,45 +70,16 @@ Here is an example::
     synchfolder: ./../esbin
 
 
-Above configuration, indicates that there are total of 4 logical nodes, they
-are elastic, kafka, kiloeyes and agent01. The installation sequence is in
-order of elastic, kafka, kiloeyes and agent01, the ctlnodes section indicates
-that sequence, ctlnodes will be always installed before agent nodes. The
-section logical2physical node indicates how a logical node maps to a physical
-machine, in the above example, 3 logical nodes (elastic, kafka and kiloeyes)
-are all mapped to a physical node called controller, which gets defined by its
-ip address and a name. agent01 is also defined by using its ip and name. From
-this setup, you can install elastic, kafka and kiloeyes onto different
-machines.
+Above configuration, indicates that there are total of 3 physical nodes,
+node01, node02 and node03. There are various logical nodes, the
+logical2physical node section defines the mappings between logical and
+physical node. These logical nodes are master node, kibana node and couple
+data nodes. Master and kibana map to physical node node01 and datanode01 and
+datanode02 map to node02 and node03 respectively.
 
-Since the agent was specifically developed to work with openstack security,
-without openstack running somewhere, it will be pretty pointless to setup
-agent. The best way to set the whole thing up, is to following the following
-steps::
 
-1. Prepare 3 machines, either physical or virtual machines should work fine.
-2. Install DevStack onto the first machine and configure the keystone url and
-   userid and password in nodes.conf.yml file. If you already have a OpenStack
-   system running, you can use that system as well, simply configure 
-   nodes.conf.yml file using the right keystone auth url and credentials.
-3. Find out the second and third machine IPs and fill the IPs in the
-   nodes.conf.yml file, use the second machine for controller and the third
-   for agent.
-4. Make sure that you have the same password for the root user for the second
-   and third machine. Place the user name and password in file ids.conf.yml.
-   Also make sure that the server has ssh turned on so that vagrant can run
-   successfully.
-5  Kiloeyes depend on java, elastic search and kafka. This vagrant project will
-   install these components onto the machine you specified in the conf file,
-   but you will have to download these binaries into a directory which will be
-   located in the same directory kiloeyes root resides. The structure is indicated
-   above in introduction section.
-6. Change to vagrant directory and now run the following two commands::
+Prepare your nodes accordingly then run the following two commands to deploy
+elasticsearch and its components::
 
-        vagrant up
-        vagrant provision
-7. If all goes well, you should have everything running successfully, after
-   awhile, agent should be sending messages to kiloeyes and the data should be
-   available in elasticsearch and can be seen by using kibana::
-
-        http://192.168.1.90:5601
+    vagrant up
+    vagrant provision
