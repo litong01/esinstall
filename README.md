@@ -67,7 +67,10 @@ Here is an example::
     tribe:
 
     # the folder where some binaries reside will be synched onto the machines
-    synchfolder: ./../esbin
+    # this design allows files to be synched just once per physical server
+    synchfolder:
+      folder: ./../esbin
+      nodes: [master, data]
 
 
 Above configuration, indicates that there are total of 3 physical nodes,
@@ -75,7 +78,10 @@ node01, node02 and node03. There are various logical nodes, the
 logical2physical node section defines the mappings between logical and
 physical node. These logical nodes are master node, kibana node and couple
 data nodes. Master and kibana map to physical node node01 and datanode01 and
-datanode02 map to node02 and node03 respectively.
+datanode02 map to node02 and node03 respectively. The synchfolder indicates
+that folder relative to the root esbin will be also synched to logical master
+and data nodes. This is to avoid synch files onto a physical node multiple
+times.
 
 
 Prepare your nodes accordingly then run the following two commands to deploy
@@ -83,3 +89,9 @@ elasticsearch and its components::
 
     vagrant up
     vagrant provision
+
+If there is no error during the run, you should have elasticsearch system up
+and running, you can access it by point your browser to the master node ip
+address like the following::
+
+    http://<master_node_ip>>:9200
