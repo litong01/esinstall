@@ -1,0 +1,89 @@
+---
+node01:
+  hostname: node01.leap.dev
+  eth0: 192.168.1.37
+
+node02:
+  hostname: node02.leap.dev
+  eth0: 192.168.1.38
+
+node03:
+  hostname: node03.leap.dev
+  eth0: 192.168.1.22
+
+node04:
+  hostname: node04.leap.dev
+  eth0: 192.168.1.39
+
+
+# This section defines how a logical node maps to a physical node
+logical2physical:
+  master01: node01
+  kibana01: node01
+  datanode01: node02
+  datanode02: node03
+  datanode03: node04
+  validator: node01
+  tester: node01
+  dev01: node01
+  beat01: node01
+  beat02: node02
+  beat03: node03
+  beat04: node04
+
+# Global elasticsearch cluster variables
+elasticsearch:
+  url: http://192.168.1.37:9200
+  clustername: leap
+
+# Types of the node in a cluster, comment the type out if a type of
+# nodes do not need to be deployed. For example, for the production env, test
+# and devenv types of nodes may not needed, so comment these out. The order
+# of the types are very important, these will be the order how each node will
+# eventually be installed.
+nodetypes:
+  - master
+  - data
+  - beats
+  - kibana
+#  - client
+#  - tribe
+#  - validator
+#  - test
+#  - devenv
+
+master:
+  - master01
+
+data:
+  - datanode01
+  - datanode02
+  - datanode03
+
+kibana:
+  - kibana01
+
+client:
+
+tribe:
+
+validator:
+  - validator
+
+test:
+  - tester
+
+devenv:
+  - dev01
+
+beats:
+  - beat01
+  - beat02
+  - beat03
+  - beat04
+
+# the folder where some binaries reside will be synched onto the machines
+# this design allows files to be synched just once per physical server
+synchfolder:
+  folder: ./../esbin
+  nodes: [master, data]
