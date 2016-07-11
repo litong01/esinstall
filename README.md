@@ -94,4 +94,4 @@ If there is no error during the run, you should have elasticsearch system up
 and running, you can access it by point your browser to the master node ip
 address like the following::
 
-    http://<master_node_ip>>:9200
+    http://<<master_node_ip>>:9200
