@@ -162,30 +162,64 @@ function del_yaml_value {
    unset $1$name
 }
 
-# clear set of environments varilables starting with the given values
+# clear varilables whose name start with the given value
 # Usage:
 #   del_yaml_values 'leap_' 'name'
-# above command will remove all environment variables starts with leap_name
+# above command will remove all variables starts with name in 'leap_'
+# namespace.
 # if leave the second parameter blank, the command will remove all the
-# environment variables starts with leap_
+# variables starts in the 'leap_' namespace
 function del_yaml_values {
    local name=$2
    name=${name//./_TTT0LLL_}
    list=`set | sed -n -e "/^$1$name/p" | awk -F= '/^\w/ {print $1}' | xargs`
-   unset -v $list
+   if [[ "$list" ]]; then
+      local allkeys=($list)
+      for key in "${allkeys[@]}"
+      do
+         eval "unset -v $key"
+      done
+   fi
 }
 
-# get a set of environments varilables starting with the given values
+# get all the values whose name starts with the given value
 # Usage:
-#   get_yaml_values 'leap_' 'name.name1.name2'
-# above command will remove all environment variables starts with leap_name
-# if leave the second parameter blank, the command will remove all the
-# environment variables starts with leap_
+#   get_yaml_values 'leap_' 'name.name1'
+# above command will return all the variables valeus starts with name.name1 in
+# 'leap_' name space.
+# if leave the second parameter blank, the command will return all the
+# variable values in the namespace leap_
 function get_yaml_values {
    local name=$2
    name=${name//./_TTT0LLL_}
    list=`set | sed -n -e "/^$1$name/p" | awk -F= '/^\w/ {print $1}' | xargs`
-   local val
-   eval val=\$\{$list[@]\}
-   echo $val
+   if [[ "$list" ]]; then
+      local allkeys=($list)
+      for key in "${allkeys[@]}"
+      do
+         eval "echo \$${key[@]}"
+      done
+   fi
+}
+
+# get the key names starting with the given value
+# Usage:
+#   get_yaml_keys 'leap_' 'name.name1'
+# above command will list all the key names start with name.name1
+# if leave the second parameter blank, the command will list all the key names
+# in 'leap_' namespace
+function get_yaml_keys {
+   local name=$2
+   name=${name//./_TTT0LLL_}
+   list=`set | sed -n -e "/^$1$name/p" | awk -F= '/^\w/ {print $1}' | xargs`
+   if [[ "$list" ]]; then
+      local allkeys=($list)
+      local val
+      for key in "${allkeys[@]}"
+      do
+         val="${key/$1/}"
+         val=${val//_TTT0LLL_/.}
+         echo $val
+      done
+   fi
 }
