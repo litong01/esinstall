@@ -30,6 +30,7 @@ logical2physical:
   beat02: node02
   beat03: node03
   beat04: node04
+  beatsdashboard01: node01
 
 # Global elasticsearch cluster variables
 elasticsearch:
@@ -44,8 +45,9 @@ elasticsearch:
 nodetypes:
   - master
   - data
-  - beats
   - kibana
+  - beats
+  - beatsdashboard
 #  - client
 #  - tribe
 #  - validator
@@ -82,6 +84,8 @@ beats:
   - beat03
   - beat04
 
+beatsdashboard:
+  - beatsdashboard01
 # the folder where some binaries reside will be synched onto the machines
 # this design allows files to be synched just once per physical server
 synchfolder:
