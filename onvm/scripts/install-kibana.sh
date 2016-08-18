@@ -8,12 +8,8 @@ load_yaml 'leap__' '/onvm/conf/nodes.conf.yml'
 # Java is required, install java first
 source /onvm/scripts/install-java.sh
 
-if [ -f /esbin/kibana-4.*-linux-x64.tar.gz ];then
-  rm -r -f /opt/kibana /opt/leaptemp
-  mkdir -p /opt/leaptemp
-
-  tar -zxf /esbin/kibana-4.*-linux-x64.tar.gz -C /opt/leaptemp
-  mv /opt/leaptemp/* /opt/kibana
+if [ -f /esbin/kibana_4.*_amd64.deb ];then
+  dpkg -i /esbin/kibana_4.*_amd64.deb.deb
 
   es_url=`get_yaml_value 'leap__' 'elasticsearch.url'`
 
@@ -24,9 +20,7 @@ if [ -f /esbin/kibana-4.*-linux-x64.tar.gz ];then
   del_yaml_values 'kibana__'
 
   # Start the kibana services
-  start-stop-daemon --start --quiet --chuid root \
-    --exec /opt/kibana/bin/kibana \
-    --pidfile /opt/kibana/kibana.pid --make-pidfile --background >> /dev/null 2>&1
+  service kibana restart
 
   echo 'Kibana install is now complete!'
   echo 'ES URL for kibana is at '$1:5601

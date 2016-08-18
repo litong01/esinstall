@@ -8,14 +8,21 @@ load_yaml 'leap__' '/onvm/conf/nodes.conf.yml'
 # Java is required, install java first
 source /onvm/scripts/install-java.sh
 
-if [ -f /esbin/logstash-2.*.tar.gz ];then
-  rm -r -f /opt/logstash /opt/leaptemp
-  mkdir -p /opt/leaptemp
+if [ -f /esbin/logstash-2.*_all.deb ];then
+  dpkg -i /esbin/logstash-2.*_all.deb
 
-  tar -zxf /esbin/logstash-2.*.tar.gz -C /opt/leaptemp
-  mv /opt/leaptemp/* /opt/logstash
+  masternodes=`get_yaml_values 'leap__' 'master'`
+  for nodename in $masternodes
+  do
+    pname=`get_yaml_value 'leap__' 'logical2physical.'${nodename}`
+    esip=`get_yaml_value 'leap__' ${pname}'.eth0'`
+  done
+
+  sed -i -e "s/ESIP/${esip}/g" /onvm/conf/logstash.conf
+  cp /onvm/conf/logstash.conf /etc/logstash/conf.d/logstash.conf
 
   echo 'Logstash install is now complete!'
+  service logstash restart
 else
   echo 'Logstash binary was not found!'
   echo 'Download Logstash and configure the location in nodes.conf.yml file.'
