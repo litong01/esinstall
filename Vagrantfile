@@ -8,8 +8,14 @@ ids = YAML.load_file("onvm/conf/ids.conf.yml")
 Vagrant.configure("2") do |config|
   config.vm.box = "tknerr/managed-server-dummy"
   config.ssh.username = ids['username']
-  config.ssh.password = ids['password']
-
+  if ids['private_key_path']
+    config.ssh.private_key_path = ids['private_key_path']
+  elsif ids['password']
+    config.ssh.password = ids['password']
+  else
+    puts 'No private key or password defined! Config VM credentials in onvm/conf/ids.conf.yml file'
+    exit(1)
+  end
   config.vm.synced_folder ".", "/vagrant", disabled: true
   config.vm.synced_folder "onvm", "/onvm", disabled: false, create: true
 

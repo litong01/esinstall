@@ -1,0 +1,9 @@
+---
+username: "ubuntu"
+
+# Use either password or private_key_path, when both present, key is used
+# over the password
+private_key_path: "~/.ssh/id_rsa"
+
+password: "xxxxxxx"
+

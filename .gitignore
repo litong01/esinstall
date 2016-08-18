@@ -1,6 +1,4 @@
 .vagrant/*
-/provisioning/ids*.conf.yml
-/onvm/conf/ids.conf.yml
 *.out
 *.log
 .DS_*
