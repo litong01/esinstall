@@ -16,7 +16,6 @@ if [ -f /esbin/kibana-4.*-linux-x64.tar.gz ];then
   mv /opt/leaptemp/* /opt/kibana
 
   es_url=`get_yaml_value 'leap__' 'elasticsearch.url'`
-  echo 'ES URL for kibana is at '$es_url
 
   # Use the yaml-config library to config kibana parameters
   load_yaml 'kibana__' '/opt/kibana/config/kibana.yml'
@@ -30,6 +29,7 @@ if [ -f /esbin/kibana-4.*-linux-x64.tar.gz ];then
     --pidfile /opt/kibana/kibana.pid --make-pidfile --background >> /dev/null 2>&1
 
   echo 'Kibana install is now complete!'
+  echo 'ES URL for kibana is at '$1:5601
 else
   echo 'Kibana binary was not found!'
   echo 'Download kibana and  and configure the location in nodes.conf.yml file.'
