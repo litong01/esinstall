@@ -8,8 +8,8 @@ load_yaml 'leap__' '/onvm/conf/nodes.conf.yml'
 # Java is required, install java first
 source /onvm/scripts/install-java.sh
 
-if [ -f /esbin/logstash-2.*_all.deb ];then
-  dpkg -i /esbin/logstash-2.*_all.deb
+if [ -f /esbin/logstash_2.*_all.deb ];then
+  dpkg -i /esbin/logstash_2.*_all.deb
 
   masternodes=`get_yaml_values 'leap__' 'master'`
   for nodename in $masternodes
