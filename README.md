@@ -6,16 +6,16 @@ these files into a directory named leapbin at the same directory where this
 project root directory is. Here is an example::
 
         leapbin
-            elasticsearch-2.3.0.deb
+            elasticsearch-2.3.5.deb
             jdk-8u77-linux-x64.tar.gz
-            kibana-4.5.0-linux-x64.tar.gz
+            kibana_4.5.4_amd64.deb
+            logstash_2.3.4-1_all.deb
         esinstall
             ....
 
 Having the structure like this will make the install goes faster. And when you
 need to run the scripts repeatly, you won't need to keep downloading these
-large files. The example directory leapbin above also lists the current
-required software to run kiloeyes.
+large files.
 
 
 Usage:
