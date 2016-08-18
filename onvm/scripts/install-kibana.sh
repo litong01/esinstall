@@ -9,7 +9,7 @@ load_yaml 'leap__' '/onvm/conf/nodes.conf.yml'
 source /onvm/scripts/install-java.sh
 
 if [ -f /esbin/kibana_4.*_amd64.deb ];then
-  dpkg -i /esbin/kibana_4.*_amd64.deb.deb
+  dpkg -i /esbin/kibana_4.*_amd64.deb
 
   es_url=`get_yaml_value 'leap__' 'elasticsearch.url'`
 
