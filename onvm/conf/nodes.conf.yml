@@ -20,6 +20,7 @@ node04:
 logical2physical:
   master01: node01
   kibana01: node01
+  logstash01: node01
   datanode01: node02
   datanode02: node03
   datanode03: node04
@@ -46,6 +47,7 @@ nodetypes:
   - master
   - data
   - kibana
+  - logstash
   - beats
   - beatsdashboard
 #  - client
@@ -64,6 +66,9 @@ data:
 
 kibana:
   - kibana01
+
+logstash:
+  - logstash01
 
 client:
 
